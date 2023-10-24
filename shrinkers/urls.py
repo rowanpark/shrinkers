@@ -14,9 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import debug_toolbar
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+# from shortener.views import index, redirect_test
+from shortener.views import index, get_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('__debug__', include(debug_toolbar.urls)),  # Django Debug Toolbar
+    path('', index, name='index_name'),
+    # path('redirect', redirect_test),
+    path('get_user/<int:user_id>', get_user),
 ]
