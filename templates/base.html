@@ -1,21 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastCapus Django</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastCampus Django</title>
 </head>
 <body>
-    <!-- {{ welcome_msg }} -->
-    <!-- {{ hello }} -->
-    {{ user }}<br>
-    {{ user.username }}<br>
-    {{ user.email }}<br>
-    {{ user.last_login }}<br>
-    {% for i in params %}
-    {{ i }}<br>
-    {% endfor %}
-    {% if user == 'abc' %}
-    {% endif %}
+  {# {{ welcome_msg }}<br> #}
+  {# {{ hello }}<br> #}
+
+  {{ user }}<br>
+  {% comment %}
+  {{ user.username }}<br>
+  {{ user.email }}<br>
+  {{ user.last_login }}<br>
+  {% endcomment %}
+
+  {% for i in params %}
+  {{ i }}<br>
+  {% endfor %}
+
+  {% if user.username == "rowanpark" %}
+  {{ hello }} {{ welcome_msg }}
+  {% endif %}
+
+  {% if msg %}
+  <h4>{{ msg }}</h4>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+  <p><a href="{% url 'logout' %}">로그아웃</a></p>
+  {% else %}
+  <p><a href="{% url 'register' %}">회원가입</a></p>
+  <p><a href="{% url 'login' %}">로그인</a></p>
+  {% endif %}
 </body>
 </html>
