@@ -45,11 +45,14 @@ INSTALLED_APPS = [
     'shortener.apps.ShortenerConfig',
     # 3rd party apps
     'debug_toolbar',  # Django Debug Toolbar
+    'django_seed',
 ]
 
 INTERNAL_IPS = [
     '127.0.0.1',  # Django Debug Toolbar
 ]
+
+LOGIN_URL = '/login'  # defult: '/account/login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
