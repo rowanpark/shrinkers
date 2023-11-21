@@ -1,5 +1,7 @@
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
@@ -12,7 +14,7 @@ from shortener.models import Users
 def index(request):
     # print(request.user.pay_plan)
     # print(request.user.pay_plan.name)
-    
+
     user = Users.objects.filter(username='rowanpark').first()
     # user = Users.objects.get(username='rowanpark')
     email = user.email if user else 'Anonymous User!'
@@ -82,3 +84,14 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+@login_required
+def list_view(request):
+    page = int(request.GET.get('p', 1))
+    users = Users.objects.all().order_by('-id')
+    paginator = Paginator(users, 10)  # 두번째 인덱스: 한페이지당 노출될 데이터 수
+    users = paginator.get_page(page)
+
+    return render(request, 'boards.html', {'users': users})
+    # return render(request, 'boards.html', {'users': {}})
+    # return render(request, 'boards.html', {'users': []})
