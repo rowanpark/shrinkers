@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from shortener.forms import RegisterForm
+from shortener.forms import RegisterForm, LoginForm
 from shortener.models import Users
 
 # Create your views here.
@@ -64,37 +64,63 @@ def register(request):
         return render(request, 'register.html', {'form': form})
 
 def login_view(request):
-    msg = None
+    # msg = None
     is_ok = False
     if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
+        # form = AuthenticationForm(request, request.POST)
+        form = LoginForm(request.POST)
         # msg = '가입되어 있지 않거나 로그인 정보가 잘못 되었습니다.'
         # print(form.is_valid)
+
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            # username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             raw_password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=raw_password)
-            if user is not None:
-                # msg = '로그인 성공'
-                login(request, user)
-                is_ok = True
-        else:
-            msg = '올바른 유저ID와 패스워드를 입력하세요.'
+            # user = authenticate(username=username, password=raw_password)
+            # if user is not None:
+            #     # msg = '로그인 성공'
+            #     login(request, user)
+            #     is_ok = True
+        # else:
+        #     msg = '올바른 유저ID와 패스워드를 입력하세요.'
+            remember_me = form.cleaned_data.get('remember_me')
+            msg = '올바른 이메일과 패스워드를 입력하세요.'
+            
+            try:
+                user = Users.objects.get(email=email)
+            except Users.DoesNotExist:
+                # msg = '올바른 이메일과 패스워드를 입력하세요. (2)'
+                pass  # '파이써닉'하게
+            else:  # 예외가 발생하지 않았을 때 실행되는 코드
+                if user.check_password(raw_password):
+                    msg = None
+                    login(request, user)
+                    is_ok = True
+                    request.session['remember_me'] = remember_me
+                    
+                    if not remember_me:
+                        request.session.set_expiry(0)  # 브라우저를 닫으면 세션이 즉시 만료
+
         # return render(request, 'base.html', {'msg': msg})
         # return render(request, 'login.html', {'form': form, 'msg': msg})
     else:
-        form = AuthenticationForm()
-        # return render(request, 'login.html', {'form': form})
+        # form = AuthenticationForm()
+        # # return render(request, 'login.html', {'form': form})
+        msg = None
+        form = LoginForm()
+        
+    print('REMEMBER_ME: ', request.session.get('remember_me'))
 
-    for visible in form.visible_fields():
-        visible.field.widget.attrs['placehoder'] = '유저ID' if visible.name == 'username' else '패스워드'
-        visible.field.widget.attrs['class'] = 'form-control'
+    # for visible in form.visible_fields():
+    #     visible.field.widget.attrs['placehoder'] = '유저ID' if visible.name == 'username' else '패스워드'
+    #     visible.field.widget.attrs['class'] = 'form-control'
 
     return render(request, 'login.html', {'form': form, 'msg': msg, 'is_ok': is_ok})
 
 def logout_view(request):
     logout(request)
-    return redirect('index')
+    # return redirect('index')
+    return redirect('login')
 
 @login_required
 def list_view(request):
