@@ -85,7 +85,7 @@ def login_view(request):
         #     msg = '올바른 유저ID와 패스워드를 입력하세요.'
             remember_me = form.cleaned_data.get('remember_me')
             msg = '올바른 이메일과 패스워드를 입력하세요.'
-            
+
             try:
                 user = Users.objects.get(email=email)
             except Users.DoesNotExist:
@@ -97,7 +97,7 @@ def login_view(request):
                     login(request, user)
                     is_ok = True
                     request.session['remember_me'] = remember_me
-                    
+
                     if not remember_me:
                         request.session.set_expiry(0)  # 브라우저를 닫으면 세션이 즉시 만료
 
@@ -108,7 +108,7 @@ def login_view(request):
         # # return render(request, 'login.html', {'form': form})
         msg = None
         form = LoginForm()
-        
+
     print('REMEMBER_ME: ', request.session.get('remember_me'))
 
     # for visible in form.visible_fields():
