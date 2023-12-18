@@ -23,7 +23,7 @@ from django.urls import include, path  # include: django 2.0 이후 버전에서
 # from django.urls import path
 
 # from shortener.views import index, redirect_test
-from shortener.views import index, get_user, register, login_view, logout_view, list_view
+from shortener.views import index, get_user, register, login_view, logout_view, list_view, url_list
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,9 +34,11 @@ urlpatterns = [
     path('', index, name='index'),
     # path('redirect', redirect_test),
     path('get_user/<int:user_id>', get_user),
-    
+
     path('register', register, name='register'),
     path('login', login_view, name='login'),
     path('logout', logout_view, name='logout'),
-    path('list', list_view, name='list_view')
+    
+    path('list', list_view, name='list_view'),
+    path('list/url', url_list, name='url_list'),
 ]

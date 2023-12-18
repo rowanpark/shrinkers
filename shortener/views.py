@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from shortener.forms import RegisterForm, LoginForm
 from shortener.models import Users
 
-# Create your views here.
 
 def index(request):
     # print(request.user.pay_plan)
@@ -31,6 +30,7 @@ def index(request):
 #     print('Go Redirect')
 #     return redirect('index_name')
 
+
 @csrf_exempt  # csrf 체크 면제
 def get_user(request, user_id):
     print(user_id)
@@ -47,6 +47,7 @@ def get_user(request, user_id):
 
         return JsonResponse(status=201, data=dict(msg='You just reached with Post Method!'), safe=False)  # 한글을 보낼 경우에 'safe=False'
 
+
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -62,6 +63,7 @@ def register(request):
     else:
         form = RegisterForm()
         return render(request, 'register.html', {'form': form})
+
 
 def login_view(request):
     # msg = None
@@ -117,6 +119,7 @@ def login_view(request):
 
     return render(request, 'login.html', {'form': form, 'msg': msg, 'is_ok': is_ok})
 
+
 def logout_view(request):
     logout(request)
     # return redirect('index')
@@ -132,3 +135,7 @@ def list_view(request):
     return render(request, 'boards.html', {'users': users})
     # return render(request, 'boards.html', {'users': {}})
     # return render(request, 'boards.html', {'users': []})
+
+
+def url_list(request):
+    return render(request, 'url_list.html')
