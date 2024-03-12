@@ -24,7 +24,7 @@
     <meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
     <meta name="author" content="Creative Tim">
     <title>{% block title %}{% endblock %} | Shrinkers</title>
-    
+
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
     <!-- Icons -->
@@ -33,39 +33,49 @@
     <!-- Page plugins -->
     <link rel="stylesheet" href="{% static 'assets/vendor/fullcalendar/dist/fullcalendar.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendor/sweetalert2/dist/sweetalert2.min.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Argon CSS -->
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" type="text/css">
+    <!-- Core -->
+    <script src="{% static 'assets/vendor/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/js-cookie/js.cookie.js' %}"></script>
+    <script src="{% static 'assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js' %}"></script>
+    <!-- Optional JS -->
+    <script src="{% static 'assets/vendor/chart.js/dist/Chart.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/chart.js/dist/Chart.extension.js' %}"></script>
   </head>
-  
+
   <body>
     {% comment %}
     {# {{ welcome_msg }}<br> #}
     {# {{ hello }}<br> #}
-    
+
     {{ user }}<br>
     {# {{ user.username }}<br> #}
     {# {{ user.email }}<br> #}
     {# {{ user.last_login }}<br> #}
-    
+
     {% for i in params %}
     {{ i }}<br>
     {% endfor %}
-    
+
     {% if user.username == "rowanpark" %}
     {{ hello }} {{ welcome_msg }}
     {% endif %}
-    
+
     {% if msg %}
     <h4>{{ msg }}</h4>
     {% endif %}
-    
+
     {% if user.is_authenticated %}
     <p><a href="{% url 'logout' %}">로그아웃</a></p>
     {% else %}
     <p><a href="{% url 'register' %}">회원가입</a></p>
     <p><a href="{% url 'login' %}">로그인</a></p>
     {% endif %}
-    
+
     {% block content %}
     {% endblock content %}
     {% endcomment %}
@@ -102,7 +112,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Page Content -->
       <div class="container-fluid mt--6">
         {% block content %}{% endblock content %}
