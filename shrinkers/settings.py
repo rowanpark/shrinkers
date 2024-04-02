@@ -24,14 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r2d@d2^b@=6l6x62q%4jrt9jrd50$hgqcsc*+9mo)@d6%ttk@5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENV = os.environ.get('DJANGO_ENV', 'dev')
 
-ALLOWED_HOSTS = []
+if ENV == 'dev':
+    DEBUG = True
+# elif ENV == "staging":
+#     DEBUG = False
+else:
+    DEBUG = False
+
+ALLOWED_HOSTS = ['*']  # *: 모든 호스트 허용
 
 
 # Application definition
 
-AUTH_USER_MODEL = 'shortener.Users'
+# AUTH_USER_MODEL = 'shortener.Users'
 
 INSTALLED_APPS = [
     # default apps
@@ -44,9 +51,16 @@ INSTALLED_APPS = [
     # created apps
     'shortener.apps.ShortenerConfig',
     # 3rd party apps
-    'debug_toolbar',  # Django Debug Toolbar
-    'django_seed',
+    # 'debug_toolbar',  # Django Debug Toolbar
+    # 'django_seed',
 ]
+
+# if DEBUG:
+#     INSTALLED_APPS += [
+#         'debug_toolbar',
+#         'django_seed',
+#     ]
+# 주석처리를 한 이유: DEBUG = True 일때만 실행되도록 하려고
 
 INTERNAL_IPS = [
     '127.0.0.1',  # Django Debug Toolbar
@@ -62,8 +76,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
 ]
+
+# if DEBUG:
+#     MIDDLEWARE += [
+#         'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
+#     ]
 
 ROOT_URLCONF = 'shrinkers.urls'
 
@@ -91,8 +110,16 @@ WSGI_APPLICATION = 'shrinkers.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'app_db',
+        'USER': 'root',
+        'PASSWORD': 'mysql-*^^*',
+        'HOST': '34.64.189.11',
+        'PORT': 3306,
+        'OPTION': {
+            'autocommit': True,
+            'charset': 'utf8mb4'
+        }
     }
 }
 
