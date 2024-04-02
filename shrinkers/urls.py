@@ -15,7 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-import debug_toolbar
+from shrinkers.settings import DEBUG
+# if DEBUG:
+#     import debug_toolbar
 
 from django.contrib import admin
 from django.urls import include, path  # include: django 2.0 이후 버전에서 사용되는 것
@@ -31,17 +33,13 @@ from shortener.views import (
     logout_view,
 
     list_view,
-
-    url_list,
-    url_create,
-    url_change,
 )
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('__debug__/', include(debug_toolbar.urls)),  # Django Debug Toolbar
+    # path('__debug__/', include(debug_toolbar.urls)),  # Django Debug Toolbar
 
     # path('', index, name='index_name'),
     path('', index, name='index'),
@@ -54,8 +52,10 @@ urlpatterns = [
 
     path('list', list_view, name='list_view'),
 
-    # path('list/url', url_list, name='url_list'),
-    path('urls', url_list, name='url_list'),
-    path('urls/create', url_create, name='url_create'),
-    path('urls/<str:action>/<int:url_id>', url_change, name='url_change'),
+    path('urls/', include('shortener.urls.urls'))
 ]
+
+# if DEBUG:
+#     urlpatterns += [
+#         path('__debug__/', include(debug_toolbar.urls)),  # Django Debug Toolbar
+#     ]
