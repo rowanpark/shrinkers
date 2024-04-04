@@ -1,10 +1,22 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from shortener.forms import UrlCreateForm
 from shortener.models import ShortenedUrls
 from shortener.utils import url_count_changer
+
+
+def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지 않음
+    print(prefix, url)
+    get_url = get_object_or_404(ShortenedUrls, prefix=prefix, shortened_url=url)
+    is_permanent = False  # 302: 임시 리다이렉트 (검색엔진에 안잡힘)
+    target = get_url.target_url
+    if get_url.creator.organization:
+        is_permanent = True  # 301: 검색엔진에 잡히는 리다이렉트
+    if not target.startswith('https://') and not target.startswith('http://'):
+        target = 'https://' + get_url.target_url
+    return redirect(target, permanent=is_permanent)
 
 
 @login_required
