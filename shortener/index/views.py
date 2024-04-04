@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+# from django.http import JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from shortener.forms import RegisterForm, LoginForm
+from shortener.forms import LoginForm, RegisterForm
 from shortener.models import Users
 
 
