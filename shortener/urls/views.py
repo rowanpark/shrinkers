@@ -1,14 +1,29 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis.geoip2 import GeoIP2
 from django.shortcuts import get_object_or_404, redirect, render
 
+from ratelimit.decorators import ratelimit
+
 from shortener.forms import UrlCreateForm
-from shortener.models import ShortenedUrls
+from shortener.models import ShortenedUrls, Statistic
 from shortener.utils import url_count_changer
 
 
+# @ratelimit: 요청 속도를 제한, 사용자가 애플리케이션에 과도한 요청을 보내는 것을 방지 = 어뷰징(abusing) 방지
+# 어뷰징: 애플리케이션에 과도한 요청을 보내는 등 서비스를 악용하는 행위 (서버 리소스 낭비 -> 서비스 성능 저하)
+# key: 요청을 식별하는 기준, ip 주소 또는 사용자의 식별자 등이 사용
+# rate: 허용된 요청 속도를 나타내는 문자열
+# 3/m: 1분에 3번
+# 10/s: 1초에 10번
+@ratelimit(key='ip', rate='3/m') 
 def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지 않음
-    print(prefix, url)
+    # print(prefix, url)
+    was_limited = getattr(request, 'limited', False)
+    
+    if was_limited:
+        return redirect('index')
+
     get_url = get_object_or_404(ShortenedUrls, prefix=prefix, shortened_url=url)
     is_permanent = False  # 302: 임시 리다이렉트 (검색엔진에 안잡힘)
     target = get_url.target_url
@@ -16,11 +31,18 @@ def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지
         is_permanent = True  # 301: 검색엔진에 잡히는 리다이렉트
     if not target.startswith('https://') and not target.startswith('http://'):
         target = 'https://' + get_url.target_url
+
+    history = Statistic()
+    history.record(request, get_url)
+
+    # print(is_permanent)
     return redirect(target, permanent=is_permanent)
 
 
 @login_required
 def url_list(request):
+    # country = GeoIP2().country('google.co.kr')
+    # print(country)
     get_list = ShortenedUrls.objects.order_by('-created_at').all()
     return render(request, 'url_list.html', {'list': get_list})
 
