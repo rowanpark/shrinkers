@@ -14,6 +14,10 @@ def dict_slice(d:Dict, n:int):
 
 
 def dict_filter(d:Dict, filter_list:List):
+    # 파라미터 값이 없을 경우
+    if d is None:
+        return {}
+
     filtered = {}
     for k, v in d.items():
         if k in filter_list:
