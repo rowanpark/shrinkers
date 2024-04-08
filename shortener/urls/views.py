@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geoip2 import GeoIP2
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
 from ratelimit.decorators import ratelimit
@@ -32,17 +33,28 @@ def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지
     if not target.startswith('https://') and not target.startswith('http://'):
         target = 'https://' + get_url.target_url
 
+    custom_params = request.GET.dict() if request.GET.dict() else None
     history = Statistic()
-    history.record(request, get_url)
+    history.record(request, get_url, custom_params)
 
     # print(is_permanent)
     return redirect(target, permanent=is_permanent)
 
 
-@login_required
+# @login_required
 def url_list(request):
+    # GeoIP2 사용 예제
     # country = GeoIP2().country('google.co.kr')
     # print(country)
+
+    # 통계 사용 예제
+    # a = (
+    #     Statistic.objects.filter(shortened_url_id=3)
+    #     .values('custom_params__email_id')
+    #     .annotate(t=Count('custom_params__email_id'))
+    # )
+    # print(a)
+
     get_list = ShortenedUrls.objects.order_by('-created_at').all()
     return render(request, 'url_list.html', {'list': get_list})
 
@@ -89,7 +101,7 @@ def url_change(request, action, url_id):
         else:
             mag = '해당 URL 정보를 찾을 수 없습니다.'
     elif request.method == 'GET' and action == 'update':
-        url_date = ShortenedUrls.objects.filter(pk=url_id).first()
+        url_data = ShortenedUrls.objects.filter(pk=url_id).first()
         form = UrlCreateForm(instance=url_data)
         return render(request, 'url_create.html', {'form': form, 'is_update': True})
     return redirect('url_list')
