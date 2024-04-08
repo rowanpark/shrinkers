@@ -51,12 +51,12 @@ INSTALLED_APPS = [
     # created apps
     'shortener.apps.ShortenerConfig',
     # 3rd party apps
-    # 'debug_toolbar',  # Django Debug Toolbar
-    # 'django_seed',
+    'django_user_agents',
 ]
 
 # if DEBUG:
 #     INSTALLED_APPS += [
+#         # 3rd party apps
 #         'debug_toolbar',
 #         'django_seed',
 #     ]
@@ -76,13 +76,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 # if DEBUG:
 #     MIDDLEWARE += [
 #         'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
 #     ]
+
+GEOIP_PATH = os.path.join(BASE_DIR, "geolite2")
 
 ROOT_URLCONF = 'shrinkers.urls'
 
