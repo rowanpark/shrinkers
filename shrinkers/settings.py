@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'shortener.apps.ShortenerConfig',
     # 3rd party apps
     'django_user_agents',
+    'rest_framework',
 ]
 
 # if DEBUG:
@@ -61,6 +62,11 @@ INSTALLED_APPS = [
 #         'django_seed',
 #     ]
 # 주석처리를 한 이유: DEBUG = True 일때만 실행되도록 하려고
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
 
 INTERNAL_IPS = [
     '127.0.0.1',  # Django Debug Toolbar
