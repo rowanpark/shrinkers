@@ -19,6 +19,7 @@ from django.urls import include, path  # include: django 2.0 이후 버전에서
 # from django.conf.urls import include  # django 2.0 이전 버전과의 하위 호환성을 제공
 
 from shortener.urls.views import url_redirect
+from shortener.urls.urls import router as url_router
 from shrinkers.settings import DEBUG
 # if DEBUG:
 #     import debug_toolbar
@@ -28,7 +29,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('shortener.index.urls')),
     path('urls/', include('shortener.urls.urls')),
-    path('<str:prefix>/<str:url>', url_redirect)
+    path('api/', include(url_router.urls)),
+    path('<str:prefix>/<str:url>', url_redirect),
 ]
 
 # if DEBUG:
