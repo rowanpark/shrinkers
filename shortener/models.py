@@ -152,9 +152,10 @@ class TrackingParams(TimeStampedModel):
     params = models.CharField(max_length=20)
 
     # @classmethod: 첫 번째 매개변수로 클래스 자체를 받음
-    # cls: 현재 클래스를 가리킴 (아래의 경우에는 TrackingParams 클래스를 가리킴)
+    # cls: 현재 클래스를 가리킴 (아래의 경우에는 TrackingParams 클래스를 가리킴, cls -> TrackingParams 대체 가능)
     @classmethod
-    def get_tracking_params(cls, shortened_url_id):
-        return cls.objects.filter(shortened_url_id=shortened_url_id).values_list('params', flat=False)
+    def get_tracking_params(cls, shortened_url_id: int):
+        # return cls.objects.filter(shortened_url_id=shortened_url_id).values_list('params', flat=False)
+        return TrackingParams.objects.filter(shortened_url_id=shortened_url_id).values_list('params', flat=False)
         # flat=Ture: <QuerySet ['email_id', 'ref_by']>
         # flat=False: <QuerySet [('email_id',), ('ref_by',)]> or <QuerySet [{'params': 'email_id'}, {'params': 'ref_by'}]>
