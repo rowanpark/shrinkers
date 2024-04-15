@@ -7,7 +7,7 @@ from shortener.urls.views import url_list, url_create, url_change
 
 
 router = routers.DefaultRouter()
-router.register(r'urls', UserViewSet)
+router.register(r'urls', UrlListViewSet)
 
 urlpatterns = [
     path('', url_list, name='url_list'),
