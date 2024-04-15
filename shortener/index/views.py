@@ -72,7 +72,7 @@ def login_view(request):
     else:
         msg = None
         form = LoginForm()
-    print('REMEMBER_ME: ', request.session.get('remember_me'))
+    print('REMEMBER_ME:', request.session.get('remember_me'))
     return render(request, 'login.html', {'form': form, 'msg': msg, 'is_ok': is_ok})
 
 

@@ -28,6 +28,7 @@ def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지
     get_url = get_object_or_404(ShortenedUrls, prefix=prefix, shortened_url=url)
     is_permanent = False  # 302: 임시 리다이렉트 (검색엔진에 안잡힘)
     target = get_url.target_url
+    print('get_url.creator.organization:', get_url.creator.organization)
     if get_url.creator.organization:
         is_permanent = True  # 301: 검색엔진에 잡히는 리다이렉트
     if not target.startswith('https://') and not target.startswith('http://'):
@@ -89,7 +90,7 @@ def url_change(request, action, url_id):
                     try:
                         url_data.delete()
                     except Exception as e:
-                        print(e)
+                        print('url_change Error:', e)
                     else:
                         url_count_changer(request, False)
                     messages.add_message(request, messages.INFO, msg)
