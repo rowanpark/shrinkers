@@ -90,6 +90,12 @@ class ShortenedUrls(TimeStampedModel):
     def clicked(self):
         self.click += 1
         self.save()
+        return self  # 메서드 체이닝(=체인 메서드)을 사용할 수 있도록, 예) obj.clicked().save().another_method()
+
+    def reseted_click(self):
+        self.click = 0
+        self.save()
+        return self
 
 
 class Statistic(TimeStampedModel):

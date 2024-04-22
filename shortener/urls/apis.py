@@ -2,7 +2,7 @@ from django.http import Http404  # 아래 표현 방식보다 더 일반적으�
 # from django.http.response import Http404
 
 from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import renderer_classes
+from rest_framework.decorators import action, renderer_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
@@ -11,13 +11,13 @@ from shortener.urls.serializers import UrlCreateSerializer, UrlListSerializer
 from shortener.utils import MsgOk, url_count_changer
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = ShortenedUrls.objects.all().order_by('-created_at')
-    serializer_class = UrlListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class UserViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows users to be viewed or edited.
+#     """
+#     queryset = ShortenedUrls.objects.all().order_by('-created_at')
+#     serializer_class = UrlListSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
 
 class UrlListViewSet(viewsets.ModelViewSet):
@@ -62,4 +62,22 @@ class UrlListViewSet(viewsets.ModelViewSet):
         # GET ALL
         queryset = self.get_queryset().all()
         serializer = UrlListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def add_click(self, request, pk=None):
+        queryset = self.get_queryset().filter(pk=pk, creator_id=request.user.id)
+        if not queryset.exists():
+            raise Http404
+        rtn = queryset.first().clicked()  # 메서드 체이닝
+        serializer = UrlListSerializer(rtn)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def reset_click(self, request, pk=None):
+        queryset = self.get_queryset().filter(pk=pk, creator_id=request.user.id)
+        if not queryset.exists():
+            raise Http404
+        rtn = queryset.first().reseted_click()  # 메서드 체이닝
+        serializer = UrlListSerializer(rtn)
         return Response(serializer.data)
