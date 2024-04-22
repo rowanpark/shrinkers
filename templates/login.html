@@ -112,6 +112,7 @@
                 {% endif %}
                 <form method="post">
                   {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ next }}">
                   <div class="form-group mb-3">
                     <div class="input-group input-group-merge input-group-alternative">
                       <div class="input-group-prepend">

@@ -48,6 +48,7 @@ def register(request):
 
 def login_view(request):
     is_ok = False
+    next_url = request.GET.get('next', '/')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -69,6 +70,7 @@ def login_view(request):
                     request.session['remember_me'] = remember_me
                     if not remember_me:
                         request.session.set_expiry(0)  # 브라우저를 닫으면 세션이 즉시 만료
+                    return redirect(next_url)
     else:
         msg = None
         form = LoginForm()

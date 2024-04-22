@@ -42,7 +42,7 @@ def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지
     return redirect(target, permanent=is_permanent)
 
 
-# @login_required
+@login_required
 def url_list(request):
     # GeoIP2 사용 예제
     # country = GeoIP2().country('google.co.kr')
