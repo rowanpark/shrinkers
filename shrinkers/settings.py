@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'shortener.apps.ShortenerConfig',
     # 3rd party apps
     'django_user_agents',
+    'drf_yasg',
     'rest_framework',
 ]
 
@@ -117,6 +118,10 @@ WSGI_APPLICATION = 'shrinkers.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'app_db',
@@ -127,8 +132,8 @@ DATABASES = {
         'OPTION': {
             'autocommit': True,
             'charset': 'utf8mb4'
-        }
-    }
+        },
+    },
 }
 
 
