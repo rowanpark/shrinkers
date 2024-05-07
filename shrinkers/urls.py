@@ -45,7 +45,7 @@ schema_view = get_schema_view(
 )
 
 apis = NinjaAPI(title='Shrinkers API')
-apis.add_router('/users/', user_router, tags=['Common'])  # tags: 아무거나
+apis.add_router('/users/', user_router, tags=['Common'])  # tags: 아무거나 (화면에 보여지는 부분)
 
 urlpatterns = [
     url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

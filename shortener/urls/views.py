@@ -56,7 +56,7 @@ def url_list(request):
     # )
     # print(a)
 
-    get_list = ShortenedUrls.objects.order_by('-created_at').all()
+    get_list = ShortenedUrls.objects.order_by('-created_at').filter(creator_id=request.user.id).all()
     return render(request, 'url_list.html', {'list': get_list})
 
 
