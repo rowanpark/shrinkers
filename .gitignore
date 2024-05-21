@@ -1,5 +1,8 @@
 ### my.gitignore
 .editorconfig
+# 민감파일
+/shrinkers/service_key.json
+/shrinkers/service_key_master.json
 
 
 
