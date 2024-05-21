@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 {% block title %}URL 리스트{% endblock title %}
 {% block main_breadcrumb %}대시보드{% endblock main_breadcrumb %}
@@ -24,6 +24,7 @@
               <th scope="col">단축 URL</th>
               <th scope="col">생성채널</th>
               <th scope="col">생성일</th>
+              <th scope="col">클릭수</th>
               <th scope="col">액션</th>
             </tr>
           </thead>
@@ -74,7 +75,14 @@
               <td>[[ l.created_via ]]</td>
               <td>[[ l.created_at ]]</td>
               <td>
-                <button class="btn btn-sm btn-primary">수정</button>
+                [[ l.click ]]
+                <a :href="'/urls/'+l.id+'/statistic'">
+                  <i class="ni ni-chart-bar-32 ml-2" style="cursor: pointer;"></i>
+                </a>
+              </td>
+              <td>
+                <a :href="'/urls/update/' + l.id" class="btn btn-sm btn-primary">수정</a>
+                {% comment %} <button class="btn btn-sm btn-primary">수정</button> {% endcomment %}
                 <button @click="deleteUrl(l.id)" class="btn btn-sm btn-danger">삭제</button>
               </td>
             </tr>
@@ -114,7 +122,7 @@
     data: {
       newUrlName: null,
       newUrlTarget: null,
-      urlLists: []
+      urlLists: [],
     },
     mounted() {
       this.getList();
@@ -122,8 +130,8 @@
     methods: {
       getList: function () {
         $("#vue_div").LoadingOverlay("show");
-        axios.get(`/api/urls/`)
-        .then(function (response) {
+        axios.get(`/api/urls/`,
+        ).then(function (response) {
           vm.urlLists = response.data;
         }).catch(function (e) {
           console.error(e);  // 오류 발생 시 콘솔에 출력
@@ -145,20 +153,20 @@
           vm.getList();
         });
       },
-      getCookie: function (name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie != "") {
-          var cookies = document.cookie.split(";");
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookie[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + "=")) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-      }
+      // getCookie: function (name) {
+      //   let cookieValue = null;
+      //   if (document.cookie && document.cookie != "") {
+      //     var cookies = document.cookie.split(";");
+      //     for (var i = 0; i < cookies.length; i++) {
+      //       var cookie = cookie[i].trim();
+      //       // Does this cookie string begin with the name we want?
+      //       if (cookie.substring(0, name.length + 1) == (name + "=")) {
+      //         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      //         break;
+      //       }
+      //     }
+      //   }
+      // },
     },
     filters: {
       addressAssembler: function(v, arg) {
@@ -167,7 +175,7 @@
         return `${host}/${v}/${arg}`
       }
     }
-  })
+  });
 </script>
 
 {% endblock content %}

@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from django.db.models.aggregates import Count
 from django.http import Http404  # 아래 표현 방식보다 더 일반적으로 흔하게 사용
 # from django.http.response import Http404
 
@@ -6,9 +9,9 @@ from rest_framework.decorators import action, renderer_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from shortener.models import ShortenedUrls
-from shortener.urls.serializers import UrlCreateSerializer, UrlListSerializer
-from shortener.utils import MsgOk, url_count_changer
+from shortener.models import ShortenedUrls, Statistic
+from shortener.urls.serializers import BrowserStatSerializer, UrlCreateSerializer, UrlListSerializer
+from shortener.utils import MsgOk, get_kst, url_count_changer
 
 
 # class UserViewSet(viewsets.ModelViewSet):
@@ -28,8 +31,8 @@ class UrlListViewSet(viewsets.ModelViewSet):
     def create(self, request):
         # POST METHOD
         serializer = UrlCreateSerializer(data=request.data)
-        print('serializer:', serializer)
-        print('serializer.is_valid():', serializer.is_valid())
+        # print('serializer:', serializer)
+        # print('serializer.is_valid():', serializer.is_valid())
         if serializer.is_valid():
             rtn = serializer.create(request, serializer.data)
             return Response(UrlListSerializer(rtn).data, status=status.HTTP_201_CREATED)
@@ -81,4 +84,38 @@ class UrlListViewSet(viewsets.ModelViewSet):
             raise Http404
         rtn = queryset.first().reseted_click()  # 메서드 체이닝
         serializer = UrlListSerializer(rtn)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get', 'post'])
+    def add_browser_today(self, request, pk=None):
+        queryset = self.get_queryset().filter(pk=pk, creator_id=request.user.id).first()
+        new_history = Statistic()
+        new_history.record(request, queryset, {})
+        return MsgOk()
+
+    @action(detail=True, methods=['get'])
+    def get_browser_stats(self, request, pk=None):
+        queryset = Statistic.objects.filter(
+            shortened_url_id=pk,
+            shortened_url__creator_id=request.user.id,
+            created_at__gte=get_kst() - timedelta(days=90),
+        )
+        if not queryset.exists():
+            raise Http404
+        # 1
+        # browsers = (
+        #     queryset.values('web_browser', 'created_at__date')
+        #     .annotate(count=Count('id'))
+        #     .values('count', 'web_browser', 'created_at__date')
+        #     .order_by('-created_at__date')
+        # )
+        # 2
+        browsers = (
+            queryset.values('web_browser')
+            .annotate(count=Count('id'))
+            .values('count', 'web_browser')
+            .order_by('-count')
+        )
+        # print('browsers:', browsers)
+        serializer = BrowserStatSerializer(browsers, many=True)
         return Response(serializer.data)

@@ -1,6 +1,8 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.gis.geoip2 import GeoIP2
+# from django.contrib.gis.geoip2 import GeoIP2
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -8,7 +10,7 @@ from ratelimit.decorators import ratelimit
 
 from shortener.forms import UrlCreateForm
 from shortener.models import ShortenedUrls, Statistic
-from shortener.utils import url_count_changer
+from shortener.utils import get_kst, url_count_changer
 
 
 # @ratelimit: 요청 속도를 제한, 사용자가 애플리케이션에 과도한 요청을 보내는 것을 방지 = 어뷰징(abusing) 방지
@@ -28,7 +30,7 @@ def url_redirect(request, prefix, url):  # request는 이 함수에서 쓰이지
     get_url = get_object_or_404(ShortenedUrls, prefix=prefix, shortened_url=url)
     is_permanent = False  # 302: 임시 리다이렉트 (검색엔진에 안잡힘)
     target = get_url.target_url
-    print('get_url.creator.organization:', get_url.creator.organization)
+    # print('get_url.creator.organization:', get_url.creator.organization)
     if get_url.creator.organization:
         is_permanent = True  # 301: 검색엔진에 잡히는 리다이렉트
     if not target.startswith('https://') and not target.startswith('http://'):
@@ -56,8 +58,9 @@ def url_list(request):
     # )
     # print(a)
 
-    get_list = ShortenedUrls.objects.order_by('-created_at').filter(creator_id=request.user.id).all()
-    return render(request, 'url_list.html', {'list': get_list})
+    # get_list = ShortenedUrls.objects.order_by('-created_at').filter(creator_id=request.user.id).all()
+    # return render(request, 'url_list.html', {'list': get_list})
+    return render(request, 'url_list.html')
 
 
 @login_required
@@ -106,3 +109,30 @@ def url_change(request, action, url_id):
         form = UrlCreateForm(instance=url_data)
         return render(request, 'url_create.html', {'form': form, 'is_update': True})
     return redirect('url_list')
+
+
+@login_required
+def statistic_view(request, url_id: int):
+    url_info = get_object_or_404(ShortenedUrls, pk=url_id)
+    base_qs = Statistic.objects.filter(shortened_url_id=url_id, created_at__gte=get_kst()-timedelta(days=90))
+    # print('base_qs:', base_qs)
+    # for b in base_qs:
+    #     print('b:', b)
+    clicks = (
+        base_qs.values('created_at__date')
+        .annotate(clicks=Count('id'))
+        .values('created_at__date', 'clicks')
+        .order_by('created_at__date')
+    )
+    # print('clicks:', clicks)
+    # for c in clicks:
+    #     print('c:', c)
+    date_list = [c.get('created_at__date').strftime('%Y-%m-%d') for c in clicks]
+    click_list = [c.get('clicks') for c in clicks]
+    # print('date_list:', date_list)
+    # print('click_list:', click_list)
+    return render(
+        request,
+        'statistics.html',
+        {'url': url_info, 'kst': get_kst(), 'date_list': date_list, 'click_list': click_list},
+    )

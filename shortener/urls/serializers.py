@@ -35,7 +35,7 @@ class UrlCreateSerializer(serializers.Serializer):
     target_url = serializers.CharField(max_length=2000)
 
     def create(self, request, data, commit=True):
-        print('data:', data)
+        # print('data:', data)
         instance = ShortenedUrls()
         instance.creator_id = request.user.id
         instance.nick_name = data.get('nick_name', None)
@@ -46,8 +46,13 @@ class UrlCreateSerializer(serializers.Serializer):
             try:
                 instance.save()
             except Exception as e:
-                print('UrlCreateSerializer Error:', e)
+                print('UrlCreateSerializer create Error:', e)
             else:
                 url_count_changer(request, True)
-        print('instance:', instance)
+        # print('instance:', instance)
         return instance
+
+class BrowserStatSerializer(serializers.Serializer):
+    web_browser = serializers.CharField(max_length=50)
+    count = serializers.IntegerField()
+    date = serializers.DateField(source='created_at__date', required=False)

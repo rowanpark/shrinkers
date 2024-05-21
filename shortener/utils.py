@@ -1,3 +1,5 @@
+# import datetime
+from datetime import datetime, timedelta, timezone
 from django.db.models import F
 # from django.http import JsonResponse  # 아래 표현 방식보다 더 일반적으로 흔하게 사용
 # from django.http.response import JsonResponse
@@ -19,3 +21,8 @@ def url_count_changer(request, is_increase: bool):
 def MsgOk(status: int = 200):
     # return JsonResponse(status=status, data=dict(msg='ok'))
     return Response({'msg': 'ok'}, status=status)
+
+
+def get_kst():
+    # return datetime.utcnow() + timedelta(hours=9)
+    return datetime.now(timezone.utc) + timedelta(hours=9)
