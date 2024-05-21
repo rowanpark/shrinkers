@@ -139,7 +139,7 @@ class Statistic(TimeStampedModel):
         )
         self.device_os = request.user_agent.os.family
         t = TrackingParams.get_tracking_params(url.id)
-        print('t:', t)
+        # print('t:', t)
         self.custom_params = dict_slice(dict_filter(params, t), 5)
 
         try:

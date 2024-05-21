@@ -16,7 +16,7 @@ def index(request):
 
 @csrf_exempt  # csrf 체크 면제
 def get_user(request, user_id):
-    print(user_id)
+    # print(user_id)
     if request.method == 'GET':
         abc = request.GET.get('abc')
         xyz = request.GET.get('xyz')
@@ -76,7 +76,7 @@ def login_view(request):
         form = LoginForm()
         if request.user.is_authenticated:
             return redirect(next_url)
-    print('REMEMBER_ME:', request.session.get('remember_me'))
+    # print('REMEMBER_ME:', request.session.get('remember_me'))
     return render(request, 'login.html', {'form': form, 'msg': msg, 'is_ok': is_ok})
 
 
