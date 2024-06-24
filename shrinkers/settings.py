@@ -77,14 +77,16 @@ INTERNAL_IPS = [
 LOGIN_URL = '/login'  # default: '/account/login'
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',  # 세션
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
+    'django.middleware.security.SecurityMiddleware',            # 보안 설정 적용
+    'django.contrib.sessions.middleware.SessionMiddleware',     # 세션 관리
+    # 'django.middleware.cache.UpdateCacheMiddleware',          # 응답 캐시 저장
+    'django.middleware.common.CommonMiddleware',                # 공통 처리
+    # 'django.middleware.cache.FetchFromCacheMiddleware',       # 캐시에서 응답 가져오기
+    'django.middleware.csrf.CsrfViewMiddleware',                # CSRF 보호
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # 인증 처리
+    'django.contrib.messages.middleware.MessageMiddleware',     # 메시지 처리
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',   # Clickjacking 보호
+    'django_user_agents.middleware.UserAgentMiddleware',        # 사용자 에이전트 처리
 ]
 
 # if DEBUG:
@@ -178,16 +180,16 @@ USE_TZ = True
 #     os.path.join(BASE_DIR, 'shortener', 'static'),
 # ]
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Google Storage 설정
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, "shrinkers/service_key.json")
+    os.path.join(BASE_DIR, 'shrinkers/service_key.json')
 )
-DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"  # 클라이언트(사용자) 측에서 업로드
-STATICFILES_STORAGE = "config.storage_backends.GoogleCloudStaticStorage"  # 서버(관리자) 측에서 업로드
-GS_STATIC_BUCKET_NAME = "shrinkers-django"
-STATIC_URL = "https://storage.googleapis.com/{}/statics/".format(GS_STATIC_BUCKET_NAME)
+DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'  # 클라이언트(사용자) 측에서 업로드
+STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'  # 서버(관리자) 측에서 업로드
+GS_STATIC_BUCKET_NAME = 'shrinkers-django'
+STATIC_URL = 'https://storage.googleapis.com/{}/statics/'.format(GS_STATIC_BUCKET_NAME)
 # pip install 'django-storages[google]'  # 따옴표와 괄호까지 해야함  # 그냥 pip install -r requirements.txt 해도 됐음
 # pip install google-auth
 
@@ -196,3 +198,19 @@ STATIC_URL = "https://storage.googleapis.com/{}/statics/".format(GS_STATIC_BUCKE
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_file'),
+    }
+}
+
+"""
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+"""
