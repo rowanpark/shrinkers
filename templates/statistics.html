@@ -5,9 +5,12 @@
 {% comment %} {% block main_breadcrumb %}<a href="{% url 'url_list' %}">URL 리스트</a>{% endblock main_breadcrumb %} {% endcomment %}
 {% block sub_breadcrumb_highlight %}접속통계{% endblock sub_breadcrumb_highlight %}
 {% block sub_breadcrumb %}{{ url.nick_name }}{% endblock sub_breadcrumb %}
+{% load cache %}
+
 {% block content %}
 
 <div class="row" id="vue_div">
+  {% cache 10 stats %}
   <div class="col-xl-8">
     <div class="card bg-default">
       <div class="card-header bg-transparent">
@@ -27,6 +30,7 @@
       </div>
     </div>
   </div>
+  {% endcache %}
 
   <div class="col-xl-4">
     <div class="card h-100">

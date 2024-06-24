@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.cache import cache
 from django.db.models.aggregates import Count
 from django.http import Http404  # 아래 표현 방식보다 더 일반적으로 흔하게 사용
 # from django.http.response import Http404
@@ -64,7 +65,11 @@ class UrlListViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         # GET ALL
-        queryset = self.get_queryset().filter(creator_id=request.user.id).all()
+        # queryset = self.get_queryset().filter(creator_id=request.user.id).all()
+        queryset = cache.get('url_list')
+        if not queryset:
+            queryset = self.get_queryset().filter(creator_id=request.user.id).all()
+            cache.set('url_list', queryset, 30)
         serializer = UrlListSerializer(queryset, many=True)
         return Response(serializer.data)
 

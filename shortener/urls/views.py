@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 # from django.contrib.gis.geoip2 import GeoIP2
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_page, never_cache
 
 from ratelimit.decorators import ratelimit
 
@@ -111,6 +112,7 @@ def url_change(request, action, url_id):
     return redirect('url_list')
 
 
+@cache_page(10)
 @login_required
 def statistic_view(request, url_id: int):
     url_info = get_object_or_404(ShortenedUrls, pk=url_id)
