@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import json
 import os
 from pathlib import Path
 from google.oauth2 import service_account
@@ -140,6 +141,14 @@ DATABASES = {
 }
 
 
+try:
+    EMAIL_ID = json.load(open(os.path.join(BASE_DIR, "keys.json"))).get("email")
+    EMAIL_PW = json.load(open(os.path.join(BASE_DIR, "keys.json"))).get("email_pw")
+except Exception:
+    EMAIL_ID = None
+    EMAIL_PW = None
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -180,16 +189,29 @@ USE_TZ = True
 #     os.path.join(BASE_DIR, 'shortener', 'static'),
 # ]
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Google Storage 설정
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'shrinkers/service_key.json')
-)
-DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'  # 클라이언트(사용자) 측에서 업로드
-STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'  # 서버(관리자) 측에서 업로드
-GS_STATIC_BUCKET_NAME = 'shrinkers-django'
-STATIC_URL = 'https://storage.googleapis.com/{}/statics/'.format(GS_STATIC_BUCKET_NAME)
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#     os.path.join(BASE_DIR, 'shrinkers/service_key.json')
+# )
+# DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'  # 클라이언트(사용자) 측에서 업로드
+# STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'  # 서버(관리자) 측에서 업로드
+# GS_STATIC_BUCKET_NAME = 'shrinkers-django'
+# STATIC_URL = 'https://storage.googleapis.com/{}/statics/'.format(GS_STATIC_BUCKET_NAME)
+
+if DEBUG:
+    STATIC_URL = '/static/'
+else:
+    SERVICE_KEY = json.load(open(os.path.join(BASE_DIR, 'keys.json'))).get('service_key')
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        SERVICE_KEY
+    )
+    DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'  # 클라이언트(사용자) 측에서 업로드
+    STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'  # 서버(관리자) 측에서 업로드
+    GS_STATIC_BUCKET_NAME = 'shrinkers-django'
+    STATIC_URL = 'https://storage.googleapis.com/{}/statics/'.format(GS_STATIC_BUCKET_NAME)
+
 # pip install 'django-storages[google]'  # 따옴표와 괄호까지 해야함  # 그냥 pip install -r requirements.txt 해도 됐음
 # pip install google-auth
 
