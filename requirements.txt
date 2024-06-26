@@ -3,7 +3,6 @@ appdirs==1.4.4
 asgiref==3.3.4
 async-timeout==3.0.1
 attrs==21.2.0
-backports.zoneinfo==0.2.1
 black==21.4b2
 cachetools==4.2.2
 certifi==2021.5.30
